@@ -24,7 +24,7 @@ server.use((req, res, next) => {
 server.use(express.json());
 server.use(morgan("dev"));
 
-//http://localhost:3001/rickandmorty
+//http://localhost:3001/D&Dcharts
 server.use("/D&Dcharts", mainRouter);
 
 module.exports = server;
