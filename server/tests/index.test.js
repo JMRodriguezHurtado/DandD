@@ -36,7 +36,7 @@ describe("Test de Rutas", () => {
       });
     });
   });
-  describe("GET / D&D/login", () => {
+  describe("GET/D&D/login", () => {
     // let access = {access:true}
 
     it("Informacion correcta pase usted", async () => {
