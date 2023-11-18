@@ -20,6 +20,6 @@ module.exports = (sequelize) => {
         is: [/\d/],
       },
     },
-    {timestamps: false}
+    {paranoid: true}
   );
 };
