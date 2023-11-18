@@ -1,38 +1,45 @@
 require("dotenv").config();
-const {Sequelize} = require("sequelize");
-const {DB_USER, DB_PASSWORD, DB_HOST} = process.env;
-const UserModel = require("./models/User");
-const FavoriteModel = require("./models/Characters");
-const Characters = require("./models/Characters");
+const { Sequelize } = require("sequelize");
 
-// EJERCICIO 03
-// A la instancia de Sequelize le falta la URL de conexión. ¡Agrégala!
-// Recuerda pasarle la información de tu archivo '.env'.
+const fs = require('fs');
+const path = require('path');
+const {
+  DB_USER, DB_PASSWORD, DB_HOST, DB_DEPLOY
+} = process.env;
 
-// URL ----> postgres://DB_USER:DB_PASSWORD@DB_HOST/rickandmorty
-const sequelize = new Sequelize(
-  `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/`,
-  {logging: false, native: false}
-);
 
-// EJERCICIO 05
-// Debajo de este comentario puedes ejecutar la función de los modelos.
+ const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/dandd`, {
+    logging: false, 
+    native: false, 
+  });
 
-UserModel(sequelize);
-CharacterModel(sequelize);
-//
+// const sequelize = new Sequelize(DB_DEPLOY, {
 
-//
+//   logging: false, 
+//   native: false, 
+// });
 
-// Ejercicio 06
-// ¡Relaciona tus modelos aquí abajo!
-const {User, Characters} = sequelize.models;
+const basename = path.basename(__filename);
 
-User.belongsToMany(Characters, {through: "user_characters"});
-Characters.belongsToMany(User, {through: "user_characters"});
+const modelDefiners = [];
+
+fs.readdirSync(path.join(__dirname, '/models'))
+  .filter((file) => (file.indexOf('.') !== 0) && (file !== basename) && (file.slice(-3) === '.js'))
+  .forEach((file) => {
+    modelDefiners.push(require(path.join(__dirname, '/models', file)));
+  });
+
+
+modelDefiners.forEach(model => model(sequelize));
+
+let entries = Object.entries(sequelize.models);
+let capsEntries = entries.map((entry) => [entry[0][0].toUpperCase() + entry[0].slice(1), entry[1]]);
+sequelize.models = Object.fromEntries(capsEntries);
+
+const { User, Characters } = sequelize.models;
+
 
 module.exports = {
-  User,
-  Characters,
-  conn: sequelize,
+  ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
+  conn: sequelize,     // para importart la conexión { conn } = require('./db.js');
 };
