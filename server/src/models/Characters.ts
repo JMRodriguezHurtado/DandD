@@ -1,8 +1,29 @@
-const {DataTypes} = require("sequelize");
+import { DataTypes, Model, Sequelize } from "sequelize";
 
-module.exports = (sequelize) => {
-  sequelize.define(
-    "Characters",
+interface CharactersAttributes {
+  id: number;
+  name: string;
+  status: "Alive" | "Dead" | "unknown";
+  species: string;
+  class: string;
+  gender: "Female" | "Male" | "Genderless" | "unknown";
+  origin: string;
+  image: string;
+}
+
+export default (sequelize: Sequelize) => {
+  class Characters extends Model<CharactersAttributes> implements CharactersAttributes {
+    id!: number;
+    name!: string;
+    status!: "Alive" | "Dead" | "unknown";
+    species!: string;
+    class!: string;
+    gender!: "Female" | "Male" | "Genderless" | "unknown";
+    origin!: string;
+    image!: string;
+  }
+
+  Characters.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -39,6 +60,12 @@ module.exports = (sequelize) => {
         allowNull: false,
       },
     },
-    {paranoid: true}
+    {
+      sequelize,
+      paranoid: true,
+      modelName: "Characters",
+    }
   );
+
+  return Characters;
 };
