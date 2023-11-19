@@ -1,9 +1,10 @@
-import express from "express";
+import express, { Application, Request, Response, NextFunction } from "express";
 import mainRouter from "./routes/mainRouter";
-const app = express();
 import morgan from "morgan";
 
-app.use((req, res, next) => {
+const app: Application = express();
+
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header(
