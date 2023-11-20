@@ -6,14 +6,14 @@ import path from 'path';
 dotenv.config();
 
 const {
-  DB_USER, DB_PASSWORD, DB_HOST,
+  DB_USER, DB_PASSWORD,
 } = process.env;
 
-if (!DB_USER || !DB_PASSWORD || !DB_HOST ) {
+if (!DB_USER || !DB_PASSWORD ) {
   throw new Error("Please provide all required database environment variables.");
 }
 
-const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/dandd`, {
+const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@localhost:5432/dandd`, {
   logging: false,
   native: false,
 });
