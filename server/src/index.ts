@@ -1,9 +1,14 @@
-import app from "./app";
-import { sequelize } from "./DB_connection";
+import app from './app';
+import dotenv from 'dotenv';
 
-const PORT = 3001;
+dotenv.config();
 
-app.listen(PORT, () => {
-  sequelize.sync({ force: true });
-  console.log(`Server raised on port: ${PORT}`);
-});
+const PORT = process.env.PORT || 3001;
+
+try {
+  app.listen(PORT, () => {
+    console.log(`Server raised in: http://localhost:${PORT}`);
+  });
+} catch (error) {
+  console.log(error);
+}

@@ -1,71 +1,56 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+import mongoose, { Document, Schema } from 'mongoose';
 
 interface CharactersAttributes {
-  id: number;
   name: string;
-  status: "Alive" | "Dead" | "unknown";
+  status: 'Alive' | 'Dead' | 'unknown';
   species: string;
   class: string;
-  gender: "Female" | "Male" | "Genderless" | "unknown";
+  gender: 'Female' | 'Male' | 'Genderless' | 'unknown';
   origin: string;
   image: string;
 }
 
-export default (sequelize: Sequelize) => {
-  class Characters extends Model<CharactersAttributes> implements CharactersAttributes {
-    id!: number;
-    name!: string;
-    status!: "Alive" | "Dead" | "unknown";
-    species!: string;
-    class!: string;
-    gender!: "Female" | "Male" | "Genderless" | "unknown";
-    origin!: string;
-    image!: string;
-  }
+interface CharactersDocument extends CharactersAttributes, Document {}
 
-  Characters.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-      },
-      name: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      status: {
-        type: DataTypes.ENUM("Alive", "Dead", "unknown"),
-        allowNull: false,
-      },
-      species: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      class: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      gender: {
-        type: DataTypes.ENUM("Female", "Male", "Genderless", "unknown"),
-        allowNull: false,
-      },
-      origin: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-      image: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
+const charactersSchema = new Schema<CharactersDocument>(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-    {
-      sequelize,
-      paranoid: true,
-      modelName: "Characters",
-    }
-  );
+    status: {
+      type: String,
+      enum: ['Alive', 'Dead', 'unknown'],
+      required: true,
+    },
+    species: {
+      type: String,
+      required: true,
+    },
+    class: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: ['Female', 'Male', 'Genderless', 'unknown'],
+      required: true,
+    },
+    origin: {
+      type: String,
+      required: true,
+    },
+    image: {
+      type: String,
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+    collection: 'Characters', 
+  }
+);
 
-  return Characters;
-};
+const Characters = mongoose.model<CharactersDocument>('Characters', charactersSchema);
+
+export default Characters;

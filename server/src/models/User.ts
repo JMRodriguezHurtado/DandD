@@ -3,6 +3,8 @@ import mongoose, { Document, Schema } from "mongoose";
 interface UserAttributes {
   email: string;
   password: string;
+  username: string;
+  deleted: boolean;
 }
 
 interface UserDocument extends UserAttributes, Document {}
@@ -26,6 +28,14 @@ const userSchema = new Schema<UserDocument>(
         message: "Password must contain at least one digit",
       },
     },
+    username: {
+      type: String,
+      required: true,  
+    },
+    deleted: {
+      type: Boolean,
+      default: false,
+    }
   },
   {
     timestamps: true,
