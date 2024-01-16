@@ -1,46 +1,38 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+import mongoose, { Document, Schema } from "mongoose";
 
 interface UserAttributes {
-  id: number;
   email: string;
   password: string;
 }
 
-export default (sequelize: Sequelize) => {
-  class User extends Model<UserAttributes> implements UserAttributes {
-    id!: number;
-    email!: string;
-    password!: string;
-  }
+interface UserDocument extends UserAttributes, Document {}
 
-  User.init(
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
-      },
-      email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isEmail: true,
-        },
-      },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          is: /\d/,
-        },
+const userSchema = new Schema<UserDocument>(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      validate: {
+        validator: (value: string) => /\S+@\S+\.\S+/.test(value),
+        message: "Invalid email format",
       },
     },
-    {
-      sequelize,
-      paranoid: true,
-      modelName: "User",
-    }
-  );
+    password: {
+      type: String,
+      required: true,
+      validate: {
+        validator: (value: string) => /\d/.test(value),
+        message: "Password must contain at least one digit",
+      },
+    },
+  },
+  {
+    timestamps: true,
+    collection: "Users", 
+  }
+);
 
-  return User;
-};
+const User = mongoose.model<UserDocument>("User", userSchema);
+
+export default User;
