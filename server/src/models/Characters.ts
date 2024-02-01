@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 interface CharactersAttributes {
   name: string;
+  atributes: {};
   status: 'Alive' | 'Dead' | 'unknown';
   species: string;
   class: string;
