@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+import bcrypt from 'bcrypt';
 
 interface UserAttributes {
   email: string;
@@ -7,7 +8,12 @@ interface UserAttributes {
   deleted: boolean;
 }
 
-interface UserDocument extends UserAttributes, Document {}
+interface UserDocument extends UserAttributes, Document {
+  encryptPassword: () => Promise<string>;
+  validatePassword: (password: string) => Promise<boolean>;
+  softDelete: () => Promise<UserDocument>;
+  restore: () => Promise<UserDocument>;
+}
 
 const userSchema = new Schema<UserDocument>(
   {
@@ -43,6 +49,25 @@ const userSchema = new Schema<UserDocument>(
   }
 );
 
+userSchema.methods.encryptPassword = async function () {
+  const salt = await bcrypt.genSalt(10);
+  return bcrypt.hash(this.password, salt);
+};
+
+userSchema.methods.validatePassword = function (password) {
+  return bcrypt.compare(password, this.password)
+};
+
+userSchema.methods.softDelete = function() {
+  this.deleted = true;
+  return this.save();
+};
+
+userSchema.methods.restore = function() {
+  this.deleted = false;
+  return this.save();
+}
+
 const User = mongoose.model<UserDocument>("User", userSchema);
 
-export default User;
+export {User, UserDocument};
